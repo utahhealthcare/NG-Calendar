@@ -1,0 +1,160 @@
+<section class="gls-section gls-section-muted">
+  <div class="gls-container">
+    <fieldset class="gls-fieldset">
+      <form id="events-form" class="gls-form-stacked">
+
+        <!-- Date Filter -->
+        <div class="gls-margin">
+          <label class="gls-form-label" for="event-date">Select Date</label>
+          <div class="gls-form-controls">
+            <input [(ngModel)]="selectedDate" (change)="filterEvents()" class="gls-input" id="event-date" name="event-date" type="date" placeholder="">
+          </div>
+        </div>
+
+        <!-- Service Filter -->
+        <div class="gls-margin">
+          <label class="gls-form-label"  for="service-select">Applicable Service</label>
+          <select id="service-select" name="service-select" class="gls-select" [(ngModel)]="selectedService" (change)="filterEvents()">
+            <option value="">All Services</option>
+            @for (service of applicableServices; track service) {
+              <option [value]="service" [innerHTML]="service"></option>
+            }
+          </select>
+        </div>
+
+        <!-- Event Filter -->
+        <div class="gls-margin">
+          <label class="gls-form-label"  for="event-type-select">Event Type:</label>
+          <select id="event-type-select" name="event-type-select" class="gls-select" [(ngModel)]="selectedEventType" (change)="filterEvents()">
+            <option value="">All Types</option>
+            @for (eventType of eventTypes; track eventType) {
+              <option [value]="eventType" [innerHTML]="eventType"></option>
+            }
+          </select>
+        </div>
+
+        <!-- Search Filter -->
+        <div class="gls-margin">
+          <label class="gls-form-label" for="search-query">Search:</label>
+          <div class="gls-form-controls">
+            <input [(ngModel)]="searchQuery" (input)="filterEvents()" class="gls-input" id="search-query" name="search-query" type="text" placeholder="">
+          </div>
+        </div>
+      </form>
+    </fieldset>
+  </div>
+</section>
+
+<section class="gls-section gls-section-default">
+  
+  <!-- Icons -->
+  <div class="gls-container">
+    <ul class="gls-iconnav gls-float-right">
+      <li>
+        <a class="gls-text-primary" href="https://www.trumba.com/calendars/university-of-utah-health-care?date=20240918&filterfield1=29717&media=print" gls-icon="icon: printer; ratio: .5" target="_blank"></a>
+      </li>
+      <li>
+        <a class="gls-text-primary" href="https://www.trumba.com/eventactions/university-of-utah-health-care#/subscribe" target="_blank">
+          <span class="gls-margin-small-right gls-icon" gls-icon="icon: calendar; ratio: .5"></span>
+          Subscribe
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Top Pagination -->
+  <div class="gls-container gls-margin">
+    <!-- Pagination Controls -->
+    @if (filteredEvents.length > itemsPerPage) {
+      <ul class="gls-pagination">
+        <li>
+          <a href="#">
+            <span class="gls-margin-small-right" (click)="changePage(currentPage - 1)" [class.gls-disabled]="currentPage === 1" gls-pagination-previous></span> 
+            Previous
+          </a>
+        </li>
+        <li class="gls-margin-auto-left">
+          <a href="#">Next 
+            <span class="gls-margin-small-left" (click)="changePage(currentPage + 1)" [class.gls-disabled]="currentPage === getTotalPages().length" gls-pagination-next></span>
+          </a>
+        </li>
+      </ul>
+    }
+  </div>
+
+  <!-- Calendar List -->
+  <div class="gls-container">
+
+    <div class="gls-margin-large gls-grid gls-grid-stack" gls-grid=>
+      <div class="gls-width-1-1@m gls-first-column">
+        <hr>
+      </div>
+    </div>
+    
+    <!-- Display paginated events -->
+    @for (event of paginatedEvents; track trackByEvent($index, event)) {
+      <div>
+        <div class="gls-grid-margin gls-grid" gls-grid>
+          <div class="gls-width-expand@m gls-first-column">
+            <img [src]="event.eventImage.url" [alt]="event.title" />
+          </div>
+          <div class="gls-width-3-4@m">
+            <ul class="gls-list gls-list-large">
+              <li>
+                <div class="gls-grid-small gls-child-width-expand@s gls-grid" gls-grid="">
+                  <div class="gls-width-medium@s gls-text-break gls-first-column">
+                    <h4 class="gls-text-muted gls-text-uppercase gls-h5 gls-margin-remove">{{ event.title }}</h4>
+                    <p>{{ formatEventDate(event.startDateTime) }}</p>
+                    <p [innerHTML]="getSanitizedLocation(event.location)"></p>
+                  </div>
+                  <div>
+                    <div class="gls-panel">
+                      <p [innerHTML]="event.description"></p>
+                      <ul class="gls-iconnav">
+                        <li>
+                          <a class="gls-text-primary" [href]="event.eventActionUrl" target="_blank">
+                            <span class="gls-margin-small-right gls-icon" gls-icon="icon: calendar; ratio: .5"></span>
+                            Add to Calendar
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="gls-margin-large gls-grid gls-grid-stack" gls-grid=>
+          <div class="gls-width-1-1@m gls-first-column">
+            <hr>
+          </div>
+        </div>
+      </div>
+    }
+
+      <!-- No events found message -->
+      @if (filteredEvents.length === 0) {
+        <div>
+          <p>No events match your search criteria.</p>
+          @if (getFailedFiltersSummary()) {
+            <p>{{ getFailedFiltersSummary() }}</p>
+          }
+          <a href="#" class="gls-text-primary" (click)="clearFilters()">Clear</a>
+        </div>
+      }
+
+      <!-- Pagination Controls -->
+      @if (filteredEvents.length > itemsPerPage) {
+        <ul class="gls-pagination gls-flex-center" gls-margin>
+          <li><a href="#" (click)="changePage(currentPage - 1)" [class.gls-disabled]="currentPage === 1"><span gls-pagination-previous></span></a></li>
+          @for (page of getTotalPages(); track page) {
+            <li [class.gls-active]="currentPage === page">
+              <a href="#" (click)="changePage(page)">{{ page }}</a>
+            </li>
+          }
+          <li><a href="#" (click)="changePage(currentPage + 1)" [class.gls-disabled]="currentPage === getTotalPages().length"><span gls-pagination-next></span></a></li>
+        </ul>
+      }
+  </div>
+</section>

@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { CalendarListComponent } from "./components/calendar-list/calendar-list.component";
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-calendar',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CalendarListComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'NG-Calendar';
+
 }
