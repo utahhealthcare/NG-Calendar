@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { CalendarListComponent } from "./components/calendar-list/calendar-list.component";
 
 @Component({
-  selector: 'app-calendar',
+  selector: 'calendar-app',
   standalone: true,
   imports: [RouterOutlet, CalendarListComponent],
   templateUrl: './app.component.html',

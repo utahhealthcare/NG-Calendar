@@ -1,5 +1,8 @@
-<section class="gls-section gls-section-muted">
+<section id="search-section" class="gls-section">
   <div class="gls-container">
+    <h2 class="coh-heading gls-text-primary gls-text-uppercase gls-text-center gls-margin-medium-bottom">
+      Search for an event
+    </h2>
     <fieldset class="gls-fieldset">
       <form id="events-form" class="gls-form-stacked">
 
@@ -63,19 +66,25 @@
   </div>
 
   <!-- Top Pagination -->
+  
   <div class="gls-container gls-margin">
     <!-- Pagination Controls -->
     @if (filteredEvents.length > itemsPerPage) {
       <ul class="gls-pagination">
-        <li>
-          <a href="#">
-            <span class="gls-margin-small-right" (click)="changePage(currentPage - 1)" [class.gls-disabled]="currentPage === 1" gls-pagination-previous></span> 
+        <li class="gls-margin-auto-right" [class.gls-invisible]="currentPage === 1">
+          <a 
+            class="gls-margin-small-right"
+            href="javascript:void(0);" 
+            (click)="currentPage > 1 && changePage(currentPage - 1)">
+            <span gls-pagination-previous></span>
             Previous
           </a>
         </li>
-        <li class="gls-margin-auto-left">
-          <a href="#">Next 
-            <span class="gls-margin-small-left" (click)="changePage(currentPage + 1)" [class.gls-disabled]="currentPage === getTotalPages().length" gls-pagination-next></span>
+      
+        <li class="gls-margin-auto-left" [class.gls-invisible]="currentPage === getTotalPages().length">
+          <a href="javascript:void(0);" (click)="currentPage < getTotalPages().length && changePage(currentPage + 1)">
+            Next
+            <span gls-pagination-next></span>
           </a>
         </li>
       </ul>
@@ -140,21 +149,44 @@
           @if (getFailedFiltersSummary()) {
             <p>{{ getFailedFiltersSummary() }}</p>
           }
-          <a href="#" class="gls-text-primary" (click)="clearFilters()">Clear</a>
+          <a href="" class="gls-text-primary" (click)="clearFilters()">Clear</a>
         </div>
       }
 
-      <!-- Pagination Controls -->
-      @if (filteredEvents.length > itemsPerPage) {
-        <ul class="gls-pagination gls-flex-center" gls-margin>
-          <li><a href="#" (click)="changePage(currentPage - 1)" [class.gls-disabled]="currentPage === 1"><span gls-pagination-previous></span></a></li>
-          @for (page of getTotalPages(); track page) {
-            <li [class.gls-active]="currentPage === page">
-              <a href="#" (click)="changePage(page)">{{ page }}</a>
-            </li>
-          }
-          <li><a href="#" (click)="changePage(currentPage + 1)" [class.gls-disabled]="currentPage === getTotalPages().length"><span gls-pagination-next></span></a></li>
-        </ul>
+  <!-- Pagination Controls -->
+  @if (filteredEvents.length > itemsPerPage) {
+    <ul class="gls-pagination gls-flex-center" gls-margin>
+      <!-- Previous Button -->
+      <li [class.gls-hidden]="currentPage === 1">
+        <a 
+          href="javascript:void(0);" 
+          (click)="currentPage > 1 && changePage(currentPage - 1)" 
+          [class.gls-disabled]="currentPage === 1">
+          <span gls-pagination-previous></span>
+        </a>
+      </li>
+
+      <!-- Page Numbers -->
+      @for (page of getTotalPages(); track page) {
+        <li [class.gls-active]="currentPage === page">
+          <a 
+            href="javascript:void(0);" 
+            (click)="changePage(page)">
+            {{ page }}
+          </a>
+        </li>
       }
+
+      <!-- Next Button -->
+      <li [class.gls-hidden]="currentPage === getTotalPages().length">
+        <a 
+          href="javascript:void(0);" 
+          (click)="currentPage < getTotalPages().length && changePage(currentPage + 1)" 
+          [class.gls-disabled]="currentPage === getTotalPages().length">
+          <span gls-pagination-next></span>
+        </a>
+      </li>
+    </ul>
+  }
   </div>
 </section>

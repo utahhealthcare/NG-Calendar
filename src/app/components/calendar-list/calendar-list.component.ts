@@ -65,10 +65,16 @@ export class CalendarListComponent implements OnInit {
       .filter(event => this.filterByService(event))
       .filter(event => this.filterByEventType(event))
       .filter(event => this.filterBySearchQuery(event));
-
+  
     // After filtering, reset to the first page and update the paginated events
     this.currentPage = 1;
     this.updatePaginatedEvents();
+  
+    // Scroll to the top of the search section
+    const searchSection = document.getElementById('search-section');
+    if (searchSection) {
+      searchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   // Filter by selected date (include all events from the selected date onward)
